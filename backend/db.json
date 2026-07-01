@@ -1,15 +1,5 @@
 {
-  "users": [
-    {
-      "_id": "qc37xsdr6mr1z9h7g",
-      "name": "Akaya Admin",
-      "email": "admin@akaya.com",
-      "password": "$2a$10$tWbOJyS8OuC2ojv5kEvN3e1kl.a7mrrBzVJmBmbs5Hd8XwBb.5b7C",
-      "role": "admin",
-      "createdAt": "2026-07-01T11:13:48.125Z",
-      "updatedAt": "2026-07-01T11:13:48.136Z"
-    }
-  ],
+  "users": [],
   "products": [
     {
       "_id": "saree_kalyani_1",
@@ -30,7 +20,9 @@
       "overview": "A majestic crimson saree handcrafted in traditional Kalyani Cotton. Features a rich golden zari border and a heavily detailed pallu, making it perfect for both formal gatherings and festive occasions.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days of delivery. Merchandize must be unused and in original condition.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm matching blouse piece included",
-      "careGuide": "Handwash separately with mild detergent in cold water.\nDry in shade.\nIron on medium heat."
+      "careGuide": "Handwash separately with mild detergent in cold water.\nDry in shade.\nIron on medium heat.",
+      "createdAt": "2026-07-01T12:21:01.310Z",
+      "updatedAt": "2026-07-01T12:21:01.310Z"
     },
     {
       "_id": "saree_kalyani_2",
@@ -50,7 +42,9 @@
       "overview": "Celebrate timeless tradition with this beautiful Emerald Green Kalyani Cotton Saree. Perfect drape that flows elegantly with a soft texture that keeps you comfortable throughout the day.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days of delivery.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm matching blouse piece included",
-      "careGuide": "Handwash separately with mild detergent in cold water."
+      "careGuide": "Handwash separately with mild detergent in cold water.",
+      "createdAt": "2026-07-01T12:21:01.312Z",
+      "updatedAt": "2026-07-01T12:21:01.312Z"
     },
     {
       "_id": "saree_khadi_1",
@@ -70,7 +64,9 @@
       "overview": "Elevate your handloom collection with this elegant Ivory Khadi Cotton Saree, featuring detailed multi-color floral embroidery along the borders and pallu.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm matching plain Khadi blouse piece included",
-      "careGuide": "Handwash separately in cold water. Iron on high heat."
+      "careGuide": "Handwash separately in cold water. Iron on high heat.",
+      "createdAt": "2026-07-01T12:21:01.314Z",
+      "updatedAt": "2026-07-01T12:21:01.314Z"
     },
     {
       "_id": "saree_khadi_2",
@@ -90,7 +86,9 @@
       "overview": "Vibrant mustard gold base adorned with traditional peacock thread embroidery. A lovely mix of rustic khadi and festive silk sheen.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm contrasting dark blue blouse piece included",
-      "careGuide": "Dry clean recommended."
+      "careGuide": "Dry clean recommended.",
+      "createdAt": "2026-07-01T12:21:01.316Z",
+      "updatedAt": "2026-07-01T12:21:01.316Z"
     },
     {
       "_id": "saree_mul_1",
@@ -110,7 +108,9 @@
       "overview": "Wrap yourself in the cloud-like softness of pure Mul cotton. Featuring traditional block-printing in indigo blue, this lightweight saree is the ultimate choice for daily wear.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm matching blouse piece included",
-      "careGuide": "Gentle machine wash or hand wash with mild detergents."
+      "careGuide": "Gentle machine wash or hand wash with mild detergents.",
+      "createdAt": "2026-07-01T12:21:01.321Z",
+      "updatedAt": "2026-07-01T12:21:01.321Z"
     },
     {
       "_id": "saree_mul_2",
@@ -130,7 +130,9 @@
       "overview": "Delicate pastel peach base adorned with soft pink floral jaal block prints. Incredibly lightweight and soft on the skin.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm matching blouse piece included",
-      "careGuide": "Gentle machine wash."
+      "careGuide": "Gentle machine wash.",
+      "createdAt": "2026-07-01T12:21:01.323Z",
+      "updatedAt": "2026-07-01T12:21:01.323Z"
     },
     {
       "_id": "saree_tissue_1",
@@ -150,7 +152,9 @@
       "overview": "Drape yourself in royal elegance with this Gini Tissue Saree. It reflects light beautifully and has a crisp shape that creates a highly premium silhouette.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm running gold tissue blouse piece included",
-      "careGuide": "Dry clean only."
+      "careGuide": "Dry clean only.",
+      "createdAt": "2026-07-01T12:21:01.325Z",
+      "updatedAt": "2026-07-01T12:21:01.325Z"
     },
     {
       "_id": "saree_plain_silk_1",
@@ -170,7 +174,9 @@
       "overview": "Minimalism meets luxury. This plain soft silk saree in a delicate pastel pink shade flows effortlessly and features a high-grade sheen.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm matching soft silk blouse piece",
-      "careGuide": "Dry clean only."
+      "careGuide": "Dry clean only.",
+      "createdAt": "2026-07-01T12:21:01.327Z",
+      "updatedAt": "2026-07-01T12:21:01.327Z"
     },
     {
       "_id": "saree_plain_silk_2",
@@ -190,7 +196,9 @@
       "overview": "A rich Midnight Blue silk saree with a completely plain body and a simple gold line border. Perfect for modern, sophisticated evening events.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm brocade blouse piece included",
-      "careGuide": "Dry clean only."
+      "careGuide": "Dry clean only.",
+      "createdAt": "2026-07-01T12:21:01.330Z",
+      "updatedAt": "2026-07-01T12:21:01.330Z"
     },
     {
       "_id": "saree_borderless_silk_1",
@@ -210,7 +218,9 @@
       "overview": "A contemporary borderless design in lavender, creating a continuous, seamless drape. Features delicate silver thread motifs on the pallu.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm contrasting magenta blouse piece",
-      "careGuide": "Dry clean only."
+      "careGuide": "Dry clean only.",
+      "createdAt": "2026-07-01T12:21:01.333Z",
+      "updatedAt": "2026-07-01T12:21:01.333Z"
     },
     {
       "_id": "saree_champion_silk_1",
@@ -230,7 +240,9 @@
       "overview": "A premium heavy silk saree with high luster and traditional temple borders. Drapes with structural definition, ideal for weddings.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm designer heavy blouse piece",
-      "careGuide": "Dry clean only."
+      "careGuide": "Dry clean only.",
+      "createdAt": "2026-07-01T12:21:01.338Z",
+      "updatedAt": "2026-07-01T12:21:01.338Z"
     },
     {
       "_id": "saree_soft_silk_1",
@@ -250,7 +262,9 @@
       "overview": "Elegant royal wine shade featuring antique gold zari weaves. Standard soft silk texture that wraps comfortably like a second skin.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm matching zari blouse piece",
-      "careGuide": "Dry clean only."
+      "careGuide": "Dry clean only.",
+      "createdAt": "2026-07-01T12:21:01.340Z",
+      "updatedAt": "2026-07-01T12:21:01.340Z"
     },
     {
       "_id": "saree_kottanchi_1",
@@ -270,7 +284,9 @@
       "overview": "A rare handloom Kottanchi cotton saree featuring unique grid patterns and organic terracotta shades. Highly breathable and historically unique.",
       "shippingRefund": "Exchange/Return can be initiated within 3 days.",
       "sizeFit": "Length: 5.5 Meters Saree\nBlouse: 80cm plain running cotton blouse piece",
-      "careGuide": "Handwash in cold water separately. Dry in shade."
+      "careGuide": "Handwash in cold water separately. Dry in shade.",
+      "createdAt": "2026-07-01T12:21:01.343Z",
+      "updatedAt": "2026-07-01T12:21:01.343Z"
     }
   ],
   "cart": [],

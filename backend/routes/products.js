@@ -4,9 +4,9 @@ const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 
 // GET /products
-router.get('/products', (req, res) => {
+router.get('/products', async (req, res) => {
   try {
-    const products = db.getCollection('products');
+    const products = await db.getCollection('products');
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving products' });
@@ -14,10 +14,10 @@ router.get('/products', (req, res) => {
 });
 
 // GET /reviews/:productId
-router.get('/reviews/:productId', (req, res) => {
+router.get('/reviews/:productId', async (req, res) => {
   const { productId } = req.params;
   try {
-    const reviews = db.find('reviews', { productId }) || [];
+    const reviews = (await db.find('reviews', { productId })) || [];
     
     // Calculate review summary stats
     const count = reviews.length;
@@ -48,7 +48,7 @@ router.get('/reviews/:productId', (req, res) => {
 });
 
 // POST /reviews/:productId
-router.post('/reviews/:productId', authMiddleware, (req, res) => {
+router.post('/reviews/:productId', authMiddleware, async (req, res) => {
   const { productId } = req.params;
   const { rating, title, body } = req.body;
   const userId = req.user.id;
@@ -59,10 +59,10 @@ router.post('/reviews/:productId', authMiddleware, (req, res) => {
 
   try {
     // Get user's name
-    const user = db.findOne('users', { _id: userId });
+    const user = await db.findOne('users', { _id: userId });
     const userName = user ? user.name : 'Anonymous';
 
-    const newReview = db.insert('reviews', {
+    const newReview = await db.insert('reviews', {
       productId,
       userId,
       userName,

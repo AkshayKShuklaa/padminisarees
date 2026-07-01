@@ -4,8 +4,8 @@ const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 
 // Helper to calculate order totals and verify stock
-function processOrderItems(items) {
-  const products = db.getCollection('products');
+async function processOrderItems(items) {
+  const products = await db.getCollection('products');
   let totalAmount = 0;
   const orderItems = [];
 
@@ -31,30 +31,30 @@ function processOrderItems(items) {
 
     // Deduct stock
     const newStock = Math.max(0, product.stock - item.quantity);
-    db.update('products', { _id: product._id }, { stock: newStock });
+    await db.update('products', { _id: product._id }, { stock: newStock });
   }
 
   return { totalAmount, orderItems };
 }
 
 // Helper to resolve delivery address
-function resolveAddress(userId, addressId, guestDeliveryAddress) {
+async function resolveAddress(userId, addressId, guestDeliveryAddress) {
   if (guestDeliveryAddress) {
     return guestDeliveryAddress;
   }
   
   if (addressId) {
-    const address = db.findOne('addresses', { _id: addressId, userId });
+    const address = await db.findOne('addresses', { _id: addressId, userId });
     return address || null;
   }
 
   // Fallback: get the latest address for this user
-  const addresses = db.find('addresses', { userId });
+  const addresses = await db.find('addresses', { userId });
   return addresses.length > 0 ? addresses[addresses.length - 1] : null;
 }
 
 // POST /checkout/cod (Cash on Delivery)
-router.post('/checkout/cod', authMiddleware, (req, res) => {
+router.post('/checkout/cod', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const { items, note, guestDeliveryAddress, addressId } = req.body;
 
@@ -63,10 +63,10 @@ router.post('/checkout/cod', authMiddleware, (req, res) => {
   }
 
   try {
-    const { totalAmount, orderItems } = processOrderItems(items);
-    const shippingAddress = resolveAddress(userId, addressId, guestDeliveryAddress);
+    const { totalAmount, orderItems } = await processOrderItems(items);
+    const shippingAddress = await resolveAddress(userId, addressId, guestDeliveryAddress);
 
-    const newOrder = db.insert('orders', {
+    const newOrder = await db.insert('orders', {
       userId,
       items: orderItems,
       amount: totalAmount,
@@ -78,7 +78,7 @@ router.post('/checkout/cod', authMiddleware, (req, res) => {
     });
 
     // Clear user's cart after successful order
-    db.delete('cart', { userId });
+    await db.delete('cart', { userId });
 
     res.status(201).json({
       success: true,
@@ -93,7 +93,7 @@ router.post('/checkout/cod', authMiddleware, (req, res) => {
 });
 
 // POST /checkout/create-order (Online Payment Order Creation)
-router.post('/checkout/create-order', authMiddleware, (req, res) => {
+router.post('/checkout/create-order', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const { items, guestDeliveryAddress, addressId } = req.body;
 
@@ -102,7 +102,7 @@ router.post('/checkout/create-order', authMiddleware, (req, res) => {
   }
 
   try {
-    const products = db.getCollection('products');
+    const products = await db.getCollection('products');
     let totalAmount = 0;
     for (const item of items) {
       const product = products.find(p => p._id === item.productId);
@@ -127,7 +127,7 @@ router.post('/checkout/create-order', authMiddleware, (req, res) => {
 });
 
 // POST /checkout/verify-payment
-router.post('/checkout/verify-payment', authMiddleware, (req, res) => {
+router.post('/checkout/verify-payment', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const { razorpay_order_id, razorpay_payment_id, razorpay_signature, items, note, guestDeliveryAddress, addressId } = req.body;
 
@@ -136,11 +136,11 @@ router.post('/checkout/verify-payment', authMiddleware, (req, res) => {
   }
 
   try {
-    const { totalAmount, orderItems } = processOrderItems(items);
-    const shippingAddress = resolveAddress(userId, addressId, guestDeliveryAddress);
+    const { totalAmount, orderItems } = await processOrderItems(items);
+    const shippingAddress = await resolveAddress(userId, addressId, guestDeliveryAddress);
 
     // In local development, we automatically verify any payment
-    const newOrder = db.insert('orders', {
+    const newOrder = await db.insert('orders', {
       userId,
       items: orderItems,
       amount: totalAmount,
@@ -154,7 +154,7 @@ router.post('/checkout/verify-payment', authMiddleware, (req, res) => {
     });
 
     // Clear user's cart
-    db.delete('cart', { userId });
+    await db.delete('cart', { userId });
 
     res.json({
       success: true,

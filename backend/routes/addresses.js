@@ -4,9 +4,9 @@ const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 
 // GET /addresses
-router.get('/addresses', authMiddleware, (req, res) => {
+router.get('/addresses', authMiddleware, async (req, res) => {
   try {
-    const addresses = db.find('addresses', { userId: req.user.id });
+    const addresses = await db.find('addresses', { userId: req.user.id });
     res.json(addresses);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving addresses' });
@@ -14,7 +14,7 @@ router.get('/addresses', authMiddleware, (req, res) => {
 });
 
 // POST /addresses
-router.post('/addresses', authMiddleware, (req, res) => {
+router.post('/addresses', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   const { fullName, mobile, houseNo, street, landmark, city, state, pincode, addressType } = req.body;
 
@@ -23,7 +23,7 @@ router.post('/addresses', authMiddleware, (req, res) => {
   }
 
   try {
-    const newAddress = db.insert('addresses', {
+    const newAddress = await db.insert('addresses', {
       userId,
       fullName,
       mobile,
@@ -42,18 +42,18 @@ router.post('/addresses', authMiddleware, (req, res) => {
 });
 
 // PUT /addresses/:addressId
-router.put('/addresses/:addressId', authMiddleware, (req, res) => {
+router.put('/addresses/:addressId', authMiddleware, async (req, res) => {
   const { addressId } = req.params;
   const userId = req.user.id;
   const updates = req.body;
 
   try {
-    const address = db.findOne('addresses', { _id: addressId, userId });
+    const address = await db.findOne('addresses', { _id: addressId, userId });
     if (!address) {
       return res.status(404).json({ message: 'Address not found' });
     }
 
-    const updatedAddress = db.update('addresses', { _id: addressId, userId }, updates);
+    const updatedAddress = await db.update('addresses', { _id: addressId, userId }, updates);
     res.json(updatedAddress);
   } catch (error) {
     res.status(500).json({ message: 'Error updating address' });
@@ -61,17 +61,17 @@ router.put('/addresses/:addressId', authMiddleware, (req, res) => {
 });
 
 // DELETE /addresses/:addressId
-router.delete('/addresses/:addressId', authMiddleware, (req, res) => {
+router.delete('/addresses/:addressId', authMiddleware, async (req, res) => {
   const { addressId } = req.params;
   const userId = req.user.id;
 
   try {
-    const address = db.findOne('addresses', { _id: addressId, userId });
+    const address = await db.findOne('addresses', { _id: addressId, userId });
     if (!address) {
       return res.status(404).json({ message: 'Address not found' });
     }
 
-    db.delete('addresses', { _id: addressId, userId });
+    await db.delete('addresses', { _id: addressId, userId });
     res.json({ message: 'Address deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting address' });

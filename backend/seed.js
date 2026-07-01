@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const db = require('./db');
 
 const dbPath = path.join(__dirname, 'db.json');
 
@@ -284,22 +285,37 @@ const sarees = [
   }
 ];
 
-function seedDatabase() {
-  const dbData = {
-    users: [],
-    products: sarees,
-    cart: [],
-    wishlist: [],
-    addresses: [],
-    orders: [],
-    reviews: []
-  };
-
+async function seedDatabase() {
+  console.log('Starting database seeding...');
+  
   try {
-    fs.writeFileSync(dbPath, JSON.stringify(dbData, null, 2), 'utf8');
+    // If Firebase is enabled, we delete all products in the database collections
+    // Otherwise, we can just reset db.json or write to it directly.
+    if (db.isFirebaseEnabled()) {
+      console.log('Seeding products to Firebase Firestore...');
+    } else {
+      console.log('Seeding products to Local JSON DB...');
+      // Clear db.json by writing empty objects first
+      const initialDb = {
+        users: [],
+        products: [],
+        cart: [],
+        wishlist: [],
+        addresses: [],
+        orders: [],
+        reviews: []
+      };
+      fs.writeFileSync(dbPath, JSON.stringify(initialDb, null, 2), 'utf8');
+    }
+
+    // Insert all sarees using db adapter
+    for (const saree of sarees) {
+      await db.insert('products', saree);
+    }
+    
     console.log(`Database successfully seeded with ${sarees.length} Saree products across 9 categories!`);
   } catch (error) {
-    console.error('Error seeding database with Saree products:', error);
+    console.error('Error seeding database:', error);
   }
 }
 

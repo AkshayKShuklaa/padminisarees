@@ -4,9 +4,9 @@ const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 
 // Helper to populate cart items with product details
-function getPopulatedCart(userId) {
-  const cartItems = db.find('cart', { userId });
-  const products = db.getCollection('products');
+async function getPopulatedCart(userId) {
+  const cartItems = await db.find('cart', { userId });
+  const products = await db.getCollection('products');
 
   return cartItems.map(item => {
     const product = products.find(p => p._id === item.productId);
@@ -24,9 +24,9 @@ function getPopulatedCart(userId) {
 }
 
 // GET /cart
-router.get('/cart', authMiddleware, (req, res) => {
+router.get('/cart', authMiddleware, async (req, res) => {
   try {
-    const populatedCart = getPopulatedCart(req.user.id);
+    const populatedCart = await getPopulatedCart(req.user.id);
     res.json(populatedCart);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving cart' });
@@ -34,7 +34,7 @@ router.get('/cart', authMiddleware, (req, res) => {
 });
 
 // POST /cart/add
-router.post('/cart/add', authMiddleware, (req, res) => {
+router.post('/cart/add', authMiddleware, async (req, res) => {
   const { productId, quantity, variant } = req.body;
   const userId = req.user.id;
 
@@ -46,12 +46,12 @@ router.post('/cart/add', authMiddleware, (req, res) => {
 
   try {
     // Check if item already exists in user's cart
-    const existingItem = db.findOne('cart', { userId, productId, variant: variant || '' });
+    const existingItem = await db.findOne('cart', { userId, productId, variant: variant || '' });
     
     if (existingItem) {
-      db.update('cart', { _id: existingItem._id }, { quantity: existingItem.quantity + qty });
+      await db.update('cart', { _id: existingItem._id }, { quantity: existingItem.quantity + qty });
     } else {
-      db.insert('cart', {
+      await db.insert('cart', {
         userId,
         productId,
         quantity: qty,
@@ -59,14 +59,14 @@ router.post('/cart/add', authMiddleware, (req, res) => {
       });
     }
 
-    res.json(getPopulatedCart(userId));
+    res.json(await getPopulatedCart(userId));
   } catch (error) {
     res.status(500).json({ message: 'Error adding to cart' });
   }
 });
 
 // PUT /cart/update
-router.put('/cart/update', authMiddleware, (req, res) => {
+router.put('/cart/update', authMiddleware, async (req, res) => {
   const { productId, cartItemId, quantity } = req.body;
   const userId = req.user.id;
 
@@ -78,32 +78,32 @@ router.put('/cart/update', authMiddleware, (req, res) => {
 
   try {
     if (qty <= 0) {
-      db.delete('cart', { _id: cartItemId, userId });
+      await db.delete('cart', { _id: cartItemId, userId });
     } else {
-      db.update('cart', { _id: cartItemId, userId }, { quantity: qty });
+      await db.update('cart', { _id: cartItemId, userId }, { quantity: qty });
     }
 
-    res.json(getPopulatedCart(userId));
+    res.json(await getPopulatedCart(userId));
   } catch (error) {
     res.status(500).json({ message: 'Error updating cart' });
   }
 });
 
 // DELETE /cart/remove/:cartItemId
-router.delete('/cart/remove/:cartItemId', authMiddleware, (req, res) => {
+router.delete('/cart/remove/:cartItemId', authMiddleware, async (req, res) => {
   const { cartItemId } = req.params;
   const userId = req.user.id;
 
   try {
-    db.delete('cart', { _id: cartItemId, userId });
-    res.json(getPopulatedCart(userId));
+    await db.delete('cart', { _id: cartItemId, userId });
+    res.json(await getPopulatedCart(userId));
   } catch (error) {
     res.status(500).json({ message: 'Error removing item from cart' });
   }
 });
 
 // POST /cart/merge
-router.post('/cart/merge', authMiddleware, (req, res) => {
+router.post('/cart/merge', authMiddleware, async (req, res) => {
   const { items } = req.body; // Array of { productId, quantity, variant }
   const userId = req.user.id;
 
@@ -113,11 +113,11 @@ router.post('/cart/merge', authMiddleware, (req, res) => {
 
   try {
     for (const item of items) {
-      const existingItem = db.findOne('cart', { userId, productId: item.productId, variant: item.variant || '' });
+      const existingItem = await db.findOne('cart', { userId, productId: item.productId, variant: item.variant || '' });
       if (existingItem) {
-        db.update('cart', { _id: existingItem._id }, { quantity: Math.max(existingItem.quantity, item.quantity) });
+        await db.update('cart', { _id: existingItem._id }, { quantity: Math.max(existingItem.quantity, item.quantity) });
       } else {
-        db.insert('cart', {
+        await db.insert('cart', {
           userId,
           productId: item.productId,
           quantity: item.quantity,
@@ -125,7 +125,7 @@ router.post('/cart/merge', authMiddleware, (req, res) => {
         });
       }
     }
-    res.json(getPopulatedCart(userId));
+    res.json(await getPopulatedCart(userId));
   } catch (error) {
     res.status(500).json({ message: 'Error merging cart' });
   }

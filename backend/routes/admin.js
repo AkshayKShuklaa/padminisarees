@@ -4,11 +4,11 @@ const db = require('../db');
 const { adminMiddleware } = require('../middleware/auth');
 
 // GET /admin/stats
-router.get('/admin/stats', adminMiddleware, (req, res) => {
+router.get('/admin/stats', adminMiddleware, async (req, res) => {
   try {
-    const orders = db.getCollection('orders');
-    const users = db.getCollection('users');
-    const products = db.getCollection('products');
+    const orders = await db.getCollection('orders');
+    const users = await db.getCollection('users');
+    const products = await db.getCollection('products');
 
     // Calculate total revenue from paid or COD orders
     const totalRevenue = orders.reduce((sum, order) => {
@@ -38,9 +38,10 @@ router.get('/admin/stats', adminMiddleware, (req, res) => {
 });
 
 // GET /admin/users
-router.get('/admin/users', adminMiddleware, (req, res) => {
+router.get('/admin/users', adminMiddleware, async (req, res) => {
   try {
-    const users = db.getCollection('users').map(u => {
+    const rawUsers = await db.getCollection('users');
+    const users = rawUsers.map(u => {
       const { password, ...userWithoutPassword } = u;
       return userWithoutPassword;
     });
@@ -51,9 +52,9 @@ router.get('/admin/users', adminMiddleware, (req, res) => {
 });
 
 // GET /admin/orders
-router.get('/admin/orders', adminMiddleware, (req, res) => {
+router.get('/admin/orders', adminMiddleware, async (req, res) => {
   try {
-    const orders = db.getCollection('orders');
+    const orders = await db.getCollection('orders');
     const sortedOrders = orders.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
     res.json(sortedOrders);
   } catch (error) {
@@ -62,9 +63,9 @@ router.get('/admin/orders', adminMiddleware, (req, res) => {
 });
 
 // GET /admin/products
-router.get('/admin/products', adminMiddleware, (req, res) => {
+router.get('/admin/products', adminMiddleware, async (req, res) => {
   try {
-    const products = db.getCollection('products');
+    const products = await db.getCollection('products');
     res.json(products);
   } catch (error) {
     res.status(500).json({ message: 'Error retrieving products' });
@@ -72,7 +73,7 @@ router.get('/admin/products', adminMiddleware, (req, res) => {
 });
 
 // PATCH /admin/users/:userId/role
-router.patch('/admin/users/:userId/role', adminMiddleware, (req, res) => {
+router.patch('/admin/users/:userId/role', adminMiddleware, async (req, res) => {
   const { userId } = req.params;
   const { role } = req.body;
 
@@ -81,12 +82,12 @@ router.patch('/admin/users/:userId/role', adminMiddleware, (req, res) => {
   }
 
   try {
-    const user = db.findOne('users', { _id: userId });
+    const user = await db.findOne('users', { _id: userId });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
-    const updatedUser = db.update('users', { _id: userId }, { role });
+    const updatedUser = await db.update('users', { _id: userId }, { role });
     const { password, ...userWithoutPassword } = updatedUser;
     res.json(userWithoutPassword);
   } catch (error) {
@@ -95,7 +96,7 @@ router.patch('/admin/users/:userId/role', adminMiddleware, (req, res) => {
 });
 
 // PATCH /admin/orders/:orderId/status
-router.patch('/admin/orders/:orderId/status', adminMiddleware, (req, res) => {
+router.patch('/admin/orders/:orderId/status', adminMiddleware, async (req, res) => {
   const { orderId } = req.params;
   const { status } = req.body;
 
@@ -104,7 +105,7 @@ router.patch('/admin/orders/:orderId/status', adminMiddleware, (req, res) => {
   }
 
   try {
-    const order = db.findOne('orders', { _id: orderId });
+    const order = await db.findOne('orders', { _id: orderId });
     if (!order) {
       return res.status(404).json({ message: 'Order not found' });
     }
@@ -115,7 +116,7 @@ router.patch('/admin/orders/:orderId/status', adminMiddleware, (req, res) => {
       updates.paymentStatus = 'Paid';
     }
 
-    const updatedOrder = db.update('orders', { _id: orderId }, updates);
+    const updatedOrder = await db.update('orders', { _id: orderId }, updates);
     res.json(updatedOrder);
   } catch (error) {
     res.status(500).json({ message: 'Error updating order status' });
@@ -123,14 +124,14 @@ router.patch('/admin/orders/:orderId/status', adminMiddleware, (req, res) => {
 });
 
 // POST /admin/products (Create Product)
-router.post('/admin/products', adminMiddleware, (req, res) => {
+router.post('/admin/products', adminMiddleware, async (req, res) => {
   const productData = req.body;
   if (!productData.name || !productData.price) {
     return res.status(400).json({ message: 'Product name and price are required' });
   }
 
   try {
-    const newProduct = db.insert('products', {
+    const newProduct = await db.insert('products', {
       ...productData,
       price: Number(productData.price),
       discountPrice: productData.discountPrice ? Number(productData.discountPrice) : undefined,
@@ -145,17 +146,17 @@ router.post('/admin/products', adminMiddleware, (req, res) => {
 });
 
 // PUT /admin/products/:productId (Update Product)
-router.put('/admin/products/:productId', adminMiddleware, (req, res) => {
+router.put('/admin/products/:productId', adminMiddleware, async (req, res) => {
   const { productId } = req.params;
   const productData = req.body;
 
   try {
-    const product = db.findOne('products', { _id: productId });
+    const product = await db.findOne('products', { _id: productId });
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    const updatedProduct = db.update('products', { _id: productId }, {
+    const updatedProduct = await db.update('products', { _id: productId }, {
       ...productData,
       price: productData.price ? Number(productData.price) : product.price,
       discountPrice: productData.discountPrice !== undefined ? (productData.discountPrice ? Number(productData.discountPrice) : null) : product.discountPrice,
@@ -170,16 +171,16 @@ router.put('/admin/products/:productId', adminMiddleware, (req, res) => {
 });
 
 // DELETE /admin/products/:productId
-router.delete('/admin/products/:productId', adminMiddleware, (req, res) => {
+router.delete('/admin/products/:productId', adminMiddleware, async (req, res) => {
   const { productId } = req.params;
 
   try {
-    const product = db.findOne('products', { _id: productId });
+    const product = await db.findOne('products', { _id: productId });
     if (!product) {
       return res.status(404).json({ message: 'Product not found' });
     }
 
-    db.delete('products', { _id: productId });
+    await db.delete('products', { _id: productId });
     res.json({ message: 'Product deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting product' });

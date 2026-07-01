@@ -13,7 +13,7 @@ router.post('/auth/register', async (req, res) => {
   }
 
   // Check if user already exists
-  const existingUser = db.findOne('users', { email: email.toLowerCase() });
+  const existingUser = await db.findOne('users', { email: email.toLowerCase() });
   if (existingUser) {
     return res.status(400).json({ message: 'User already exists with this email' });
   }
@@ -21,7 +21,7 @@ router.post('/auth/register', async (req, res) => {
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
     // Create new user
-    const newUser = db.insert('users', {
+    const newUser = await db.insert('users', {
       name,
       email: email.toLowerCase(),
       password: hashedPassword,
@@ -43,7 +43,7 @@ router.post('/auth/login', async (req, res) => {
     return res.status(400).json({ message: 'Please provide email and password' });
   }
 
-  const user = db.findOne('users', { email: email.toLowerCase() });
+  const user = await db.findOne('users', { email: email.toLowerCase() });
   if (!user) {
     return res.status(400).json({ message: 'Invalid credentials' });
   }
@@ -73,7 +73,7 @@ router.post('/guest/send-otp', (req, res) => {
 });
 
 // POST /guest/verify-otp
-router.post('/guest/verify-otp', (req, res) => {
+router.post('/guest/verify-otp', async (req, res) => {
   const { phone, otp } = req.body;
   if (!phone || !otp) {
     return res.status(400).json({ message: 'Phone and OTP are required' });
@@ -84,19 +84,23 @@ router.post('/guest/verify-otp', (req, res) => {
     return res.status(400).json({ message: 'Invalid OTP code. Use 123456' });
   }
 
-  // Create or find a guest user
-  let user = db.findOne('users', { email: `guest_${phone}@akaya.com` });
-  if (!user) {
-    user = db.insert('users', {
-      name: `Guest (${phone})`,
-      email: `guest_${phone}@akaya.com`,
-      phone: phone,
-      role: 'guest'
-    });
-  }
+  try {
+    // Create or find a guest user
+    let user = await db.findOne('users', { email: `guest_${phone}@akaya.com` });
+    if (!user) {
+      user = await db.insert('users', {
+        name: `Guest (${phone})`,
+        email: `guest_${phone}@akaya.com`,
+        phone: phone,
+        role: 'guest'
+      });
+    }
 
-  const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
-  res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+    const token = jwt.sign({ id: user._id, email: user.email, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
+    res.json({ token, user: { id: user._id, name: user.name, email: user.email, role: user.role } });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error during OTP verification' });
+  }
 });
 
 module.exports = router;

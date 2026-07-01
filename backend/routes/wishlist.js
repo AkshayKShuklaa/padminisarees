@@ -4,11 +4,11 @@ const db = require('../db');
 const { authMiddleware } = require('../middleware/auth');
 
 // GET /wishlist
-router.get('/wishlist', authMiddleware, (req, res) => {
+router.get('/wishlist', authMiddleware, async (req, res) => {
   const userId = req.user.id;
   try {
-    const wishlistItems = db.find('wishlist', { userId });
-    const products = db.getCollection('products');
+    const wishlistItems = await db.find('wishlist', { userId });
+    const products = await db.getCollection('products');
     
     // Populate product details
     const populatedWishlist = wishlistItems
@@ -22,7 +22,7 @@ router.get('/wishlist', authMiddleware, (req, res) => {
 });
 
 // POST /wishlist/toggle
-router.post('/wishlist/toggle', authMiddleware, (req, res) => {
+router.post('/wishlist/toggle', authMiddleware, async (req, res) => {
   const { productId } = req.body;
   const userId = req.user.id;
 
@@ -31,13 +31,13 @@ router.post('/wishlist/toggle', authMiddleware, (req, res) => {
   }
 
   try {
-    const existing = db.findOne('wishlist', { userId, productId });
+    const existing = await db.findOne('wishlist', { userId, productId });
     
     if (existing) {
-      db.delete('wishlist', { _id: existing._id });
+      await db.delete('wishlist', { _id: existing._id });
       res.json({ added: false, message: 'Removed from wishlist' });
     } else {
-      db.insert('wishlist', { userId, productId });
+      await db.insert('wishlist', { userId, productId });
       res.json({ added: true, message: 'Added to wishlist' });
     }
   } catch (error) {
